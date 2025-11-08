@@ -4,23 +4,42 @@ import dicom2nifti
 import pydicom
 import os
 import  pandas as pd
-
+import matplotlib.pyplot as plt
 
 class EstudioImaginologico:
     def __init__(self, carpeta):
         self.carpeta =carpeta
-        self.slices = [pydicom.dcmread(os.path.join(carpeta, s)) for s in os.listdir(carpeta)]
-        self.slices.sort(key=lambda x: float(x.ImagePositionPatient[2]))
+        self.ruta=carpeta
+
+        slices=[]
+        for root,dirs,files in os.walk (carpeta):
+            for f in files:
+                if f.endswith('.dcm'):
+                    path = os.path.join(root,f)
+                    ds= pydicom.dcmread (path)
+                    slices.append(ds)
+        try:
+            slices.sort(key=lambda x: float (x.ImagePositionPatient[2]))
+        except:
+            slices.sort(key=lambda x: x.IntanceNumber)
+
+        self.slices = slices
+
+        pixel_spacing = self.slices[0].PixelSpacing
+        slice_thickness = self.slices[0].SliceThickness
+        self.espaciado = (float(slice_thickness),float(pixel_spacing[0]), float(pixel_spacing[1]))
+
         self.volumen= np.stack([s.pixel_array for s in self.slices])
 
         #atributos
         self.StudyDate = self.slices[0].StudyDate
         self.StudyTime = self.slices[0].StudyTime
-        self.StudyModality = self.slices [0].StudyModality
+        self.StudyModality = getattr(self.slices [0], "Modality","Desconocido")
         self.StudyDescription =getattr(self.slices[0],"StudyDescription","Sin descripcion")
         self.SeriesTime = self.slices[0].SeriesTime
         self.Duracion = float(self.SeriesTime)-float(self.StudyTime)
         self.Volumen = np.stack([s.pixel_array for s in self.slices])
+        self.ImagenAsociada = self.volumen
         self.Forma= self.volumen.shape
 
     def conversion_NIFTI (self,carpeta_salida="nifti_output"): # se encarga de convertir la cerpeta DICOM a NIFTI
@@ -95,9 +114,9 @@ class SistemaEstudioImaginologico:
         self.estudios = []
     def anexar_estudio(self,estudio):
         self.estudios.append(estudio)
-        print (f"Se agrego estudio: {estudio.StudyDate}-{estudio.Modality}")
+        print (f"Se agrego estudio: {estudio.StudyDate}-{estudio.StudyModality}")
     def guardar_estudio(self,carpeta_salida="resultados_estudios"):
-        os.makedirs(carpeta_salida,exit_ok=True)
+        os.makedirs(carpeta_salida,exist_ok=True)
         registros=[]
         for i, estudio in enumerate(self.estudios):#guaradar en lista
             registro = {"Id":i+1,"StudyDate": estudio.StudyDate,"StudyTime": estudio.StudyTime, "StudyModality":estudio.StudyModality,  "StudyDescription":estudio.StudyDescription,"SeriesTime":estudio.SeriesTime, "Duracion":estudio.Duracion, "Volumen":estudio.Volumen, "Forma":str(estudio.Forma) }
@@ -109,7 +128,7 @@ class SistemaEstudioImaginologico:
             img_path = os.path.join(carpeta_salida,f"estudio-{i+1}.png")
             cv2.imwrite(img_path,corte_normal)
         # Guaradar en csv
-        df= pd.Dataframe(registros)
+        df= pd.DataFrame(registros)
         df.to_csv(os.path.join(carpeta_salida,"estudios.csv"),index=False,encoding="utf-8")
 
         print(f"{len(self.estudios)}estudios guaradados en la carpeta'{carpeta_salida}'")
