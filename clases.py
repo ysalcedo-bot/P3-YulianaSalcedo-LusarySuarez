@@ -22,4 +22,8 @@ class EstudioImaginologico:
         self.volumen = np.stack([s.pixel_array for s in self.slices])
         self.Forma= self.volumen.shape
 
+    def conversion_NIFTI (self,carpeta_salida="nifti_output"): # se encarga de convertir la cerpeta DICOM a NIFTI
+        os.makedirs(carpeta_salida,exist_ok=True)
+        dicom2nifti.convert_directory(self.carpeta,carpeta_salida)
+        print(f"Se ha convertido a NIFTI el DICOM en: {carpeta_salida}")
  
