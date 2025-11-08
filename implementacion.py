@@ -41,7 +41,18 @@ def menu():
                 op= input("Selecione una opcion:")
 
                 if op=="1":
-                    pass
+                    if len(sistema.estudios)==0:
+                        print("No se ha creado estudios")
+                    else:
+                        estudio= sistema.estudios[-1]
+                        print("\n-ATRIBUTOS DEL ESTUDIO ACTUAL-")
+                        print(f"Study Date: {estudio.StudyDate}")
+                        print(f"Study Time: {estudio.StudyTime}")
+                        print(f"Study Modality: {estudio.StudyModality}")
+                        print(f"Study Description: {estudio.StudyDescription}")
+                        print(f"Series Time: {estudio.SeriesTime}")
+                        print(f"Duracion del estudio: {estudio.Duracion}")
+                        print(f"Forma del volumen recontruido: {estudio.Forma}")
 
                 elif op=="2":
                     if len(sistema.estudios) ==0:
