@@ -84,7 +84,11 @@ def menu():
                 carpeta_salida = input("Ingresar carpeta donde desea guardar los estudios o Enter para 'resultados_estudios").strip() or "resultados_estudios"
                 sistema.guardar_estudio(carpeta_salida)
         elif opc=="5":
-            pass
+            archivo_csv = input("Ingresar ruta del archivo csv que desea guardar o Enter para 'resultados_estudios/estudios.csv").strip() or "resultados_estudios/estudios.csv"
+            if not os.path.exists(archivo_csv):
+                print(f"No se encontró el archivo enn la ruta:{archivo_csv}")
+            else:
+                sistema.cargar_csv(archivo_csv)
         elif opc=="6":
             print("A salido del programa...")
             break
