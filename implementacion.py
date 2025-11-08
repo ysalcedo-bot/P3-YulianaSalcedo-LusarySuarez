@@ -17,7 +17,15 @@ def menu():
         opc= input("Selecione una opción:")
 
         if opc == "1":
-            pass
+            carpeta = input ("ingresar la ruta de la carpeta DICOM: ").strip()
+            est = EstudioImaginologico(carpeta)
+            sistema.anexar_estudio(est)
+            print("Estudio creado y anexado correctamente")
+
+            #C:\Users\salce\OneDrive\Desktop\P3 YulianaSalcedo LusarySuarez\P3-YulianaSalcedo-LusarySuarez\T2
+            #C:\Users\salce\OneDrive\Desktop\P3 YulianaSalcedo LusarySuarez\P3-YulianaSalcedo-LusarySuarez\Sarcoma
+            #C:\Users\salce\OneDrive\Desktop\P3 YulianaSalcedo LusarySuarez\P3-YulianaSalcedo-LusarySuarez\PPMI
+
         elif opc=="2":
             pass
         elif opc=="3":
@@ -34,6 +42,7 @@ def menu():
 
                 if op=="1":
                     pass
+
                 elif op=="2":
                     if len(sistema.estudios) ==0:
                         print("No hay estudios cargados")
