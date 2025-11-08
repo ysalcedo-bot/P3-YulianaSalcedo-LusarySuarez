@@ -66,7 +66,12 @@ def menu():
                 elif op=="4":
                     pass
                 elif op=="5":
-                    pass
+                    if len(sistema.estudios)==0:
+                        print("No se ha creado estudios")
+                    else:
+                        estudio= sistema.estudios[-1]
+                        carpeta_salida= input("Ingresar carpeta donde desea guardar el NIFTI o Enter para 'nifti_output'): ").strip() or "nifti_output"
+                        estudio.conversion_NIFTI(carpeta_salida)
                 elif op=="6":
                     break
                 else:
