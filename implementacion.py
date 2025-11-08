@@ -35,7 +35,12 @@ def menu():
                 if op=="1":
                     pass
                 elif op=="2":
-                    pass
+                    if len(sistema.estudios) ==0:
+                        print("No hay estudios cargados")
+                    else:
+                        estudio=sistema.estudios[-1]# se toma el ultimo estudio
+                        estudio.zoom()
+
                 elif op=="3":
                     pass
                 elif op=="4":
