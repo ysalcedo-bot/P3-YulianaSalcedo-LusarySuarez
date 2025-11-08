@@ -124,7 +124,7 @@ class SistemaEstudioImaginologico:
 
             #guardar imagen
             corte_medio= estudio.ImagenAsociada[estudio.ImagenAsociada.shape[0]//2,:,:]
-            corte_normal = cv2.normalize(corte_medio,None,0,255,cv2.NORM_MINIMAX).astype(np.uint8)
+            corte_normal = cv2.normalize(corte_medio,None,0,255,cv2.NORM_MINMAX).astype(np.uint8)
             img_path = os.path.join(carpeta_salida,f"estudio-{i+1}.png")
             cv2.imwrite(img_path,corte_normal)
         # Guaradar en csv
