@@ -78,7 +78,11 @@ def menu():
                     print("Opcion invalida, intete de nuevo...")
 
         elif opc=="4":
-            pass
+            if len(sistema.estudios) ==0:
+                        print("No hay estudios cargados")
+            else:
+                carpeta_salida = input("Ingresar carpeta donde desea guardar los estudios o Enter para 'resultados_estudios").strip() or "resultados_estudios"
+                sistema.guardar_estudio(carpeta_salida)
         elif opc=="5":
             pass
         elif opc=="6":
