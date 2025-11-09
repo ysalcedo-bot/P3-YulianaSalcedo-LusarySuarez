@@ -196,5 +196,70 @@ class GestorDICOM:
         plt.tight_layout()
         plt.show()
 
+     def zoom(self, corte_index=None):
+        # Si no se especifica corte, se usa el central
+        if corte_index is None:
+            corte_index = self.volumen.shape[0] // 2
+
+        # Seleccionar el corte y normalizar a [0,255]
+        img = self.volumen[corte_index, :, :].astype(np.float32)
+        img_norm = ((img - np.min(img)) / (np.max(img) - np.min(img)) * 255).astype(np.uint8)
+
+        # Convertir a BGR para dibujar a color
+        img_bgr = cv2.cvtColor(img_norm, cv2.COLOR_GRAY2BGR)
+
+        # Mostrar imagen con ejes como referencia
+        plt.figure(figsize=(6, 6))
+        plt.imshow(img_norm, cmap='gray')
+        plt.xlabel("x (horizontal)")
+        plt.ylabel("y (vertical)")
+        plt.show()
+
+        try:
+            x1 = int(input("Ingresa coordenada X inicial: "))
+            x2 = int(input("Ingresa coordenada X final: "))
+            y1 = int(input("Ingresa coordenada Y inicial: "))
+            y2 = int(input("Ingresa coordenada Y final: "))
+        except:
+            print("Coordenadas no válidas.")
+            return
+
+        # Calcular dimensiones en mm
+        z, py, px = self.espaciado
+        ancho_mm = (x2 - x1) * px
+        alto_mm = (y2 - y1) * py
+        texto_dim = f"{ancho_mm:.1f} x {alto_mm:.1f} mm"
+
+        # Dibujar cuadro con medidas
+        cv2.rectangle(img_bgr, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv2.putText(img_bgr, texto_dim, (x1, max(0, y1 - 10)),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
+        # Recorte como tal
+        recorte = img_norm[y1:y2, x1:x2]
+        recorte_resize = cv2.resize(recorte, (img_norm.shape[1], img_norm.shape[0]))
+
+        plt.figure(figsize=(10, 5))
+        plt.subplot(121)
+        plt.imshow(cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB))
+        plt.title("Imagen original")
+        plt.axis('off')
+
+        plt.subplot(122)
+        plt.imshow(recorte_resize, cmap='gray')
+        plt.title("Región recortada")
+        plt.axis('off')
+
+        plt.tight_layout()
+        plt.show()
+
+
+        nombre = input("Ingresa el nombre del archivo para guardar: ").strip()
+        if not nombre.lower().endswith(".png"):
+            nombre += ".png"
+
+        cv2.imwrite(nombre, recorte_resize)
+        print(f"Imagen guardada como '{nombre}'")
+
 
 
