@@ -139,3 +139,24 @@ class SistemaEstudioImaginologico:
         df=pd.read_csv(archivo_csv)
         print("Metadatos caragdos corectamente")
         print(df)
+
+
+class GestorDICOM:
+    def __init__(self):
+        self.volumen = None
+        self.ruta = None
+
+    def cargar_carpeta(self, carpeta):
+        self.ruta = carpeta #OJO PIOJO
+        slices = []
+
+        for root, dirs, files in os.walk(carpeta):
+            for f in files:
+                if f.endswith('.dcm'):
+                    path = os.path.join(root, f)
+                    ds = pydicom.dcmread(path)
+                    slices.append(ds)
+
+
+
+
