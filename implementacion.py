@@ -1,5 +1,5 @@
 #menu
-from clases import EstudioImaginologico,SistemaEstudioImaginologico
+from clases import EstudioImaginologico,SistemaEstudioImaginologico, GestorDICOM
 import os
 
 def menu():
@@ -16,6 +16,7 @@ def menu():
 
         opc= input("Selecione una opción:")
 
+
         if opc == "1":
             carpeta = input ("ingresar la ruta de la carpeta DICOM: ").strip()
             est = EstudioImaginologico(carpeta)
@@ -25,15 +26,16 @@ def menu():
             #C:\Users\salce\OneDrive\Desktop\P3 YulianaSalcedo LusarySuarez\P3-YulianaSalcedo-LusarySuarez\T2
             #C:\Users\salce\OneDrive\Desktop\P3 YulianaSalcedo LusarySuarez\P3-YulianaSalcedo-LusarySuarez\Sarcoma
             #C:\Users\salce\OneDrive\Desktop\P3 YulianaSalcedo LusarySuarez\P3-YulianaSalcedo-LusarySuarez\PPMI
+            #C:\Users\salce\OneDrive\Desktop\P3 YulianaSalcedo LusarySuarez\P3-YulianaSalcedo-LusarySuarez\PPMI\3832
 
         elif opc=="2":
-             if not os.path.exists(carpeta):
+            if not os.path.exists(carpeta):
                 print("La ruta ingresada no existe. Intente nuevamente.")
             else:
                 gestor = GestorDICOM()
                 gestor.cargar_carpeta(carpeta)
                 gestor.mostrar_cortes()
-            
+
         elif opc=="3":
             while True:
                 print("\n*Operaciones disponibles sobre el estudio*\n")
@@ -61,12 +63,15 @@ def menu():
                         print(f"Forma del volumen recontruido: {estudio.Forma}")
 
                 elif op=="2":
+                    gestor = GestorDICOM()
                     gestor.zoom()
 
                 elif op=="3":
+                    gestor = GestorDICOM()
                     gestor.segmentar()
-                    
+
                 elif op=="4":
+                    gestor = GestorDICOM()
                     gestor.morfologia()
 
                 elif op=="5":
