@@ -332,4 +332,82 @@ class GestorDICOM:
         print(f"Imagen guardada como '{nombre}'")
 
 
+    def morfologia(self, corte_index=None):
+        vol = self.volumen
+        while vol is not None and vol.ndim > 3:
+            vol = vol[0]
+        self.volumen = vol
+
+        if corte_index is None:
+            corte_index = self.volumen.shape[0] // 2
+
+        try:
+            img = self.volumen[corte_index, :, :].astype(np.float32)
+        except Exception as e:
+            print("Error al extraer el corte:", e)
+            print("Forma del volumen:", self.volumen.shape)
+            return
+
+        # Normalizar a uint8
+        img_norm = ((img - np.min(img)) / (np.max(img) - np.min(img)) * 255).astype(np.uint8)
+
+      
+        plt.figure(figsize=(5,5))
+        plt.imshow(img_norm, cmap='gray')
+        plt.axis('off')
+        plt.show()
+
+        print("Transformaciones morfolóficas disponibles: 'erode', 'dilate', 'open', 'close', 'gradient', 'tophat', 'blackhat'")
+        op = input("Ingresa la transformación morfológica: ").strip().lower()
+        try:
+            k = int(input("Ingresa el tamaño del kernel (3, 5, 7, etc): "))
+        except:
+            print("Tamaño inválido. Se usará 3")
+            k = 3
+        if k <= 0: k = 3
+
+        # Crear kernel y aplicar filtro
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (k, k))
+
+        op = input("Ingresa la transformación morfológica a usar: ").strip().lower()
+
+        if op == 'erode':
+            res = cv2.erode(img_norm, kernel, iterations=1)
+        elif op == 'dilate':
+            res = cv2.dilate(img_norm, kernel, iterations=1)
+        elif op == 'open':
+            res = cv2.morphologyEx(img_norm, cv2.MORPH_OPEN, kernel)
+        elif op == 'close':
+            res = cv2.morphologyEx(img_norm, cv2.MORPH_CLOSE, kernel)
+        elif op == 'gradient':
+            res = cv2.morphologyEx(img_norm, cv2.MORPH_GRADIENT, kernel)
+        elif op == 'tophat':
+            res = cv2.morphologyEx(img_norm, cv2.MORPH_TOPHAT, kernel)
+        elif op == 'blackhat':
+            res = cv2.morphologyEx(img_norm, cv2.MORPH_BLACKHAT, kernel)
+        else:
+            print("Intente de nuevo")
+            return
+
+
+        plt.figure(figsize=(10,5))
+        plt.subplot(1,2,1)
+        plt.imshow(img_norm, cmap='gray')
+        plt.title("Original")
+        plt.axis('off')
+
+        plt.subplot(1,2,2)
+        plt.imshow(res, cmap='gray')
+        plt.title(f"Resultado ({op}, k={k})")
+        plt.axis('off')
+        plt.tight_layout()
+        plt.show()
+
+
+        nombre = input("Ingresa el nombre de la imagen a guardar: ").strip()
+        
+        cv2.imwrite(nombre, res)
+        print(f"Imagen guardada como '{nombre}'")
+
+
 
