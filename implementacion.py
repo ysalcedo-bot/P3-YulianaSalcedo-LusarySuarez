@@ -63,16 +63,34 @@ def menu():
                         print(f"Forma del volumen recontruido: {estudio.Forma}")
 
                 elif op=="2":
-                    gestor = GestorDICOM()
-                    gestor.zoom()
+                    if not os.path.exists(carpeta):
+                        print("Primero debe cargar una carpeta DICOM (opción 2 del menú principal)")
+                    else:
+                        gestor = GestorDICOM()
+                        gestor.cargar_carpeta(carpeta)
+                        gestor.zoom()
+
 
                 elif op=="3":
-                    gestor = GestorDICOM()
-                    gestor.segmentar()
+                    if not os.path.exists(carpeta):
+                        print("Primero debe cargar una carpeta DICOM (opción 2 del menú principal)")
+                    else:
+                        gestor = GestorDICOM()
+                        gestor.cargar_carpeta(carpeta)
+                        gestor.segmentar()
+
+
 
                 elif op=="4":
-                    gestor = GestorDICOM()
-                    gestor.morfologia()
+                    if len(sistema.estudios)==0:
+                        print("No se ha creado estudios. Primero cree un estudio (opción 1 del menú principal)")
+                    else:
+                        gestor = GestorDICOM()
+                        # Usar el volumen del estudio ya cargado
+                        gestor.volumen = sistema.estudios[-1].volumen
+                        gestor.espaciado = sistema.estudios[-1].espaciado
+                        gestor.morfologia()
+
 
                 elif op=="5":
                     if len(sistema.estudios)==0:
