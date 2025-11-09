@@ -157,6 +157,23 @@ class GestorDICOM:
                     ds = pydicom.dcmread(path)
                     slices.append(ds)
 
+    # Ordenar por posición o número
+        try:
+            slices.sort(key=lambda x: float(x.ImagePositionPatient[2]))
+        except:
+            slices.sort(key=lambda x: x.InstanceNumber)
+
+        # Leer espaciado
+        pixel_spacing = slices[0].PixelSpacing
+        slice_thickness = slices[0].SliceThickness
+        self.espaciado = (float(slice_thickness),
+                              float(pixel_spacing[0]),
+                              float(pixel_spacing[1]))
+
+        # Crear volumen
+        self.volumen = np.stack([s.pixel_array for s in slices], axis=0)
+        print(f"Volumen con {len(slices)} cortes.")
+
 
 
 
