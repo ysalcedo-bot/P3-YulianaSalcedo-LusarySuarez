@@ -114,7 +114,7 @@ class GestorDICOM:
 
         # Crear volumen
         self.volumen = np.stack([s.pixel_array for s in slices], axis=0)
-        print(f"Volumen con {len(slices)} cortes.")
+        print(f"Volumen con {len(slices)} cortes.Forma: {self.volumen.shape}")
 
 
     def mostrar_cortes(self):
@@ -311,7 +311,7 @@ class GestorDICOM:
         # Crear kernel y aplicar filtro
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (k, k))
 
-        op = input("Ingresa la transformación morfológica a usar: ").strip().lower()
+
 
         if op == 'erode':
             res = cv2.erode(img_norm, kernel, iterations=1)
@@ -348,7 +348,10 @@ class GestorDICOM:
 
         nombre = input("Ingresa el nombre de la imagen a guardar: ").strip()
 
-        cv2.imwrite(nombre, res)
+
+        if not nombre.lower().endswith(".png"):
+            nombre += ".png"
+        cv2.imwrite(nombre,res)
         print(f"Imagen guardada como '{nombre}'")
 
 
