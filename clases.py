@@ -175,5 +175,26 @@ class GestorDICOM:
         print(f"Volumen con {len(slices)} cortes.")
 
 
+    def mostrar_cortes(self):
+        corte_axial = self.volumen[self.volumen.shape[0] // 2, :, :]
+        corte_coronal = self.volumen[:, self.volumen.shape[1] // 2, :]
+        corte_sagital = self.volumen[:, :, self.volumen.shape[2] // 2]
+
+        z, y, x = self.espaciado
+
+        fig, axs = plt.subplots(1, 3, figsize=(12, 4))
+        axs[0].imshow(corte_axial, cmap='gray')
+        axs[0].set_title('Corte Axial')
+        axs[1].imshow(corte_coronal, cmap='gray')
+        axs[1].set_title('Corte Coronal')
+        axs[2].imshow(corte_sagital, cmap='gray')
+        axs[2].set_title('Corte Sagital')
+
+        for ax in axs:
+            ax.axis('off')
+
+        plt.tight_layout()
+        plt.show()
+
 
 
