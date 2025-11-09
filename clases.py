@@ -262,4 +262,74 @@ class GestorDICOM:
         print(f"Imagen guardada como '{nombre}'")
 
 
+    def segmentar(self, corte_index=None):
+        img_vol = self.volumen
+
+        # Si el volumen tiene dimensiones extra, se colapsa
+        while img_vol is not None and img_vol.ndim > 3:
+            img_vol = img_vol[0]
+
+        self.volumen = img_vol
+
+        if corte_index is None:
+            corte_index = self.volumen.shape[0] // 2
+
+        # extraer el corte 2D
+        img = self.volumen[corte_index, :, :]
+        img_norm = ((img - img.min()) / (img.max() - img.min()) * 255).astype(np.uint8)
+
+        # Selección tipo de umbral
+        print("Tipos de binarización disponibles: 'binary', 'binary_inv', 'trunc', 'tozero', 'tozero_inv', 'otsu', 'triangle'")
+        tipo = input("Ingresa el tipo de binarización: ").strip().lower()
+
+        if tipo == 'otsu':
+            # Umbral automático
+            ret, mask = cv2.threshold(img_norm, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+        else:
+            if tipo == 'binary':
+                flag = cv2.THRESH_BINARY
+            elif tipo == 'binary_inv':
+                flag = cv2.THRESH_BINARY_INV
+            elif tipo == 'trunc':
+                flag = cv2.THRESH_TRUNC
+            elif tipo == 'tozero':
+                flag = cv2.THRESH_TOZERO
+            elif tipo == 'tozero_inv':
+                flag = cv2.THRESH_TOZERO_INV
+            elif tipo == 'triangle':
+                flag = cv2.THRESH_TRIANGLE
+            else:
+                print("Intente de nuevo.")
+                return
+
+            # Pide el umbral solo si no es Otsu
+            try:
+                umbral = int(input("Ingresa el valor del umbral (0-255): "))
+            except:
+                print("Valor de umbral inválido.")
+                return
+
+            ret, mask = cv2.threshold(img_norm, umbral, 255, flag)
+
+        plt.figure(figsize=(10,5))
+        plt.subplot(1,2,1)
+        plt.imshow(img_norm, cmap='gray')
+        plt.title(f"Corte {corte_index} (original)")
+        plt.axis('off')
+
+        plt.subplot(1,2,2)
+        plt.imshow(mask, cmap='gray')
+        plt.title(f"Segmentación ({tipo})")
+        plt.axis('off')
+        plt.tight_layout()
+        plt.show()
+
+        nombre = input("Nombre para guardar la imagen modificada: ").strip()
+        if not nombre.lower().endswith(".png"):
+            nombre += ".png"
+        cv2.imwrite(nombre, mask)
+        print(f"Imagen guardada como '{nombre}'")
+
+
 
