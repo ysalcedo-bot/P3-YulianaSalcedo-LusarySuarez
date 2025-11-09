@@ -27,7 +27,13 @@ def menu():
             #C:\Users\salce\OneDrive\Desktop\P3 YulianaSalcedo LusarySuarez\P3-YulianaSalcedo-LusarySuarez\PPMI
 
         elif opc=="2":
-            pass
+             if not os.path.exists(carpeta):
+                print("La ruta ingresada no existe. Intente nuevamente.")
+            else:
+                gestor = GestorDICOM()
+                gestor.cargar_carpeta(carpeta)
+                gestor.mostrar_cortes()
+            
         elif opc=="3":
             while True:
                 print("\n*Operaciones disponibles sobre el estudio*\n")
@@ -55,16 +61,14 @@ def menu():
                         print(f"Forma del volumen recontruido: {estudio.Forma}")
 
                 elif op=="2":
-                    if len(sistema.estudios) ==0:
-                        print("No hay estudios cargados")
-                    else:
-                        estudio=sistema.estudios[-1]# se toma el ultimo estudio
-                        estudio.zoom()
+                    gestor.zoom()
 
                 elif op=="3":
-                    pass
+                    gestor.segmentar()
+                    
                 elif op=="4":
-                    pass
+                    gestor.morfologia()
+
                 elif op=="5":
                     if len(sistema.estudios)==0:
                         print("No se ha creado estudios")
