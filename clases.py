@@ -48,65 +48,7 @@ class EstudioImaginologico:
         print(f"Se ha convertido a NIFTI el DICOM en: {carpeta_salida}")
 
 ###########################################################################################################################
-    def zoom(self, corte_index=None):
-        """Permite seleccionar manualmente un recorte (zoom) con el mouse y guardarlo."""
-        if self.volumen is None:
-            print("Primero carga una carpeta DICOM con .cargar_carpeta()")
-            return
 
-        if corte_index is None:
-            corte_index = self.volumen.shape[0] // 2
-
-        # Seleccionamos un corte axial
-        img = self.volumen[corte_index, :, :].astype(np.float32)
-        img_norm = ((img - np.min(img)) / (np.max(img) - np.min(img)) * 255).astype(np.uint8)
-        img_bgr = cv2.cvtColor(img_norm, cv2.COLOR_GRAY2BGR)
-
-        # Mostrar imagen y dejar que el usuario seleccione la ROI
-        #from google.colab.patches import cv2_imshow  # para mostrar en Colab
-        print("Selecciona con el mouse la región que quieres recortar.")
-        print("Cuando termines, presiona ENTER o ESPACIO.")
-        r = cv2.selectROI("Selecciona región", img_bgr, showCrosshair=True)
-        cv2.destroyAllWindows()
-
-        if r == (0, 0, 0, 0):
-            print("No se seleccionó ninguna región.")
-            return
-
-        x, y, w, h = map(int, r)
-        z, py, px = self.espaciado
-        ancho_mm = w * px
-        alto_mm = h * py
-        texto_dim = f"{ancho_mm:.1f} x {alto_mm:.1f} mm"
-
-        # Dibujar el cuadro
-        cv2.rectangle(img_bgr, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        cv2.putText(img_bgr, texto_dim, (x, max(0, y - 10)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-
-        # Recorte y redimensionamiento
-        recorte = img_norm[y:y + h, x:x + w]
-        recorte_resize = cv2.resize(recorte, (img_norm.shape[1], img_norm.shape[0]))
-
-        # Pedir nombre de archivo
-        nombre_salida = input("Ingrese el nombre con el que desea guardar la imagen: ")
-
-        # Mostrar resultados
-        fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-        axs[0].imshow(cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB))
-        axs[0].set_title('Imagen original con recuadro')
-        axs[1].imshow(recorte_resize, cmap='gray')
-        axs[1].set_title('Región recortada y redimensionada')
-        for ax in axs:
-            ax.axis('off')
-        plt.tight_layout()
-        plt.show()
-
-        # Guardar
-        if not nombre_salida.endswith(".png"):
-            nombre_salida += ".png"
-        cv2.imwrite(nombre_salida, recorte_resize)
-        print(f"Imagen guardada como '{nombre_salida}'")
 
 #ALMACENAR OBJETOS
 class SistemaEstudioImaginologico:
@@ -196,7 +138,7 @@ class GestorDICOM:
         plt.tight_layout()
         plt.show()
 
-     def zoom(self, corte_index=None):
+    def zoom(self, corte_index=None):
         # Si no se especifica corte, se usa el central
         if corte_index is None:
             corte_index = self.volumen.shape[0] // 2
@@ -351,7 +293,7 @@ class GestorDICOM:
         # Normalizar a uint8
         img_norm = ((img - np.min(img)) / (np.max(img) - np.min(img)) * 255).astype(np.uint8)
 
-      
+
         plt.figure(figsize=(5,5))
         plt.imshow(img_norm, cmap='gray')
         plt.axis('off')
@@ -405,7 +347,7 @@ class GestorDICOM:
 
 
         nombre = input("Ingresa el nombre de la imagen a guardar: ").strip()
-        
+
         cv2.imwrite(nombre, res)
         print(f"Imagen guardada como '{nombre}'")
 
